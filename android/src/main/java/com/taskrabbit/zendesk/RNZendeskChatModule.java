@@ -1,21 +1,27 @@
 package com.taskrabbit.zendesk;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.zopim.android.sdk.api.ZopimChat;
-import com.zopim.android.sdk.prechat.PreChatForm;
-import com.zopim.android.sdk.model.VisitorInfo;
-import com.zopim.android.sdk.prechat.ZopimChatActivity;
 
 import java.lang.String;
 
+import zendesk.chat.Chat;
+import zendesk.chat.ChatConfiguration;
+import zendesk.chat.ChatEngine;
+import zendesk.chat.ChatProvider;
+import zendesk.chat.PreChatFormFieldStatus;
+import zendesk.chat.ProfileProvider;
+import zendesk.chat.VisitorInfo;
+import zendesk.messaging.MessagingActivity;
+
 public class RNZendeskChatModule extends ReactContextBaseJavaModule {
+
     private ReactContext mReactContext;
 
     public RNZendeskChatModule(ReactApplicationContext reactContext) {
@@ -30,43 +36,61 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setVisitorInfo(ReadableMap options) {
-        VisitorInfo.Builder builder = new VisitorInfo.Builder();
 
+        ProfileProvider profileProvider = Chat.INSTANCE.providers().profileProvider();
+        if (profileProvider == null) {
+            Log.d("Zendesk", "Profile provider is null");
+            return;
+        }
+        ChatProvider chatProvider = Chat.INSTANCE.providers().chatProvider();
+        if (chatProvider == null) {
+            Log.d("Zendesk", "Chat provider is null");
+            return;
+        }
+        VisitorInfo.Builder builder = VisitorInfo.builder();
         if (options.hasKey("name")) {
-            builder.name(options.getString("name"));
+            builder = builder.withName(options.getString("name"));
         }
         if (options.hasKey("email")) {
-            builder.email(options.getString("email"));
+            builder = builder.withEmail(options.getString("email"));
         }
         if (options.hasKey("phone")) {
-            builder.phoneNumber(options.getString("phone"));
+            builder = builder.withPhoneNumber(options.getString("phone"));
         }
+        VisitorInfo visitorInfo = builder.build();
+        profileProvider.setVisitorInfo(visitorInfo, null);
+        if (options.hasKey("department"))
+            chatProvider.setDepartment(options.getString("department"), null);
 
-        VisitorInfo visitorData = builder.build();
-
-        ZopimChat.setVisitorInfo(visitorData);
     }
 
     @ReactMethod
     public void init(String key) {
-        PreChatForm defaultPreChat = new PreChatForm.Builder()
-                .name(PreChatForm.Field.REQUIRED)
-                .email(PreChatForm.Field.REQUIRED)
-                .phoneNumber(PreChatForm.Field.REQUIRED)
-                .department(PreChatForm.Field.REQUIRED_EDITABLE)
-                .message(PreChatForm.Field.REQUIRED)
-                .build();
-        ZopimChat.init(key)
-            .preChatForm(defaultPreChat)
-            .build();
+
+        Activity activity = getCurrentActivity();
+        if (activity != null) {
+            Chat.INSTANCE.init(activity, key);
+        }
     }
 
     @ReactMethod
     public void startChat(ReadableMap options) {
         setVisitorInfo(options);
+
+        ChatConfiguration chatConfiguration = ChatConfiguration.builder()
+                .withAgentAvailabilityEnabled(false)
+                .withPreChatFormEnabled(true)
+                .withNameFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                .withPhoneFieldStatus(PreChatFormFieldStatus.HIDDEN)
+                .withDepartmentFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                .build();
+
         Activity activity = getCurrentActivity();
         if (activity != null) {
-            activity.startActivity(new Intent(mReactContext, ZopimChatActivity.class));
+            MessagingActivity.builder()
+                    .withEngines(ChatEngine.engine())
+                    .show(activity, chatConfiguration);
         }
     }
 }
