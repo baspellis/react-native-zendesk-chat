@@ -1,6 +1,7 @@
 package com.taskrabbit.zendesk;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -64,13 +65,8 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
 
     }
 
-    @ReactMethod
-    public void init(String key) {
-
-        Activity activity = getCurrentActivity();
-        if (activity != null) {
-            Chat.INSTANCE.init(activity, key);
-        }
+    public static void init(Context context, String key) {
+        Chat.INSTANCE.init(context, key);
     }
 
     @ReactMethod
