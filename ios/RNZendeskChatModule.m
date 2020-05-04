@@ -9,6 +9,7 @@
 #import "RNZendeskChatModule.h"
 #import <ChatSDK/ChatSDK.h>
 #import <ChatProvidersSDK/ChatProvidersSDK.h>
+#import <MessagingSDK/MessagingSDK.h>
 
 @implementation RNZendeskChatModule
 
@@ -24,7 +25,7 @@ RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
   }
   config.visitorInfo = [[ZDKVisitorInfo alloc] initWithName:options[@"name"]
                                                                   email:options[@"email"]
-                                                            phoneNumber:options[@"phone"];
+                                                            phoneNumber:options[@"phone"]];
   ZDKChat.instance.configuration = config;
 }
 
