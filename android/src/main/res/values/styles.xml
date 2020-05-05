@@ -1,0 +1,11 @@
+<resources>
+
+    <style name="YourLightTheme" parent="Theme.MaterialComponents.Light">
+
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/white</item>
+
+    </style>
+
+</resources>

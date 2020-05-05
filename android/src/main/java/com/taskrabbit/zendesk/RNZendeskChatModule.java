@@ -89,4 +89,12 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
                     .show(activity, chatConfiguration);
         }
     }
+
+    @ReactMethod
+    public void sendMessage(String  message) {
+
+        ChatProvider chatProvider = Chat.INSTANCE.providers().chatProvider();
+        chatProvider.sendMessage(message);
+
+    }
 }
