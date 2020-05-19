@@ -11,6 +11,8 @@
 #import <ChatProvidersSDK/ChatProvidersSDK.h>
 #import <MessagingSDK/MessagingSDK.h>
 #import <CommonUISDK/CommonUISDK.h>
+#import <SupportSDK/SupportSDK.h>
+#import <ZendeskCoreSDK/ZendeskCoreSDK.h>
 
 
 @implementation RNZendeskChatModule
@@ -72,6 +74,36 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
         UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
         [topController presentViewController:navControl animated:YES completion:nil];
   });
+}
+
+RCT_EXPORT_METHOD(initSupport:(NSDictionary *)options) {
+  [ZDKZendesk initializeWithAppId:options[@"appId"] clientId:options[@"clientId"] zendeskUrl:options[@"url"]];
+  [ZDKSupport initializeWithZendesk:[ZDKZendesk instance]];
+}
+
+RCT_EXPORT_METHOD(setUserIdentity:(NSDictionary *)options) {
+  id<ZDKObjCIdentity> userIdentity = [[ZDKObjCAnonymous alloc] initWithName:options[@"name"] email:options[@"email"]];
+  [[ZDKZendesk instance] setIdentity:userIdentity];
+}
+
+RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
+  UIViewController *helpCenter = [ZDKHelpCenterUi buildHelpCenterOverviewUiWithConfigs:@[]];
+  UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+  while (topController.presentedViewController) {
+    topController = topController.presentedViewController;
+  }
+  UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: helpCenter];
+  [topController presentViewController:navControl animated:YES completion:nil];
+}
+
+RCT_EXPORT_METHOD(showTickets:(NSDictionary *)options) {
+  UIViewController *requestListController = [ZDKRequestUi buildRequestList];
+  UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+  while (topController.presentedViewController) {
+    topController = topController.presentedViewController;
+  }
+  UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestListController];
+  [topController presentViewController:navControl animated:YES completion:nil];
 }
 
 RCT_EXPORT_METHOD(init:(NSString *)zenDeskKey) {
