@@ -87,23 +87,28 @@ RCT_EXPORT_METHOD(setUserIdentity:(NSDictionary *)options) {
 }
 
 RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
-  UIViewController *helpCenter = [ZDKHelpCenterUi buildHelpCenterOverviewUiWithConfigs:@[]];
-  UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-  while (topController.presentedViewController) {
-    topController = topController.presentedViewController;
-  }
-  UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: helpCenter];
-  [topController presentViewController:navControl animated:YES completion:nil];
+
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      UIViewController *helpCenter = [ZDKHelpCenterUi buildHelpCenterOverviewUiWithConfigs:@[]];
+      UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+      while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+      }
+      UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: helpCenter];
+      [topController presentViewController:navControl animated:YES completion:nil];
+    });
 }
 
 RCT_EXPORT_METHOD(showTickets:(NSDictionary *)options) {
-  UIViewController *requestListController = [ZDKRequestUi buildRequestList];
-  UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-  while (topController.presentedViewController) {
-    topController = topController.presentedViewController;
-  }
-  UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestListController];
-  [topController presentViewController:navControl animated:YES completion:nil];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      UIViewController *requestListController = [ZDKRequestUi buildRequestList];
+      UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+      while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+      }
+      UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestListController];
+      [topController presentViewController:navControl animated:YES completion:nil];
+      });
 }
 
 RCT_EXPORT_METHOD(init:(NSString *)zenDeskKey) {
