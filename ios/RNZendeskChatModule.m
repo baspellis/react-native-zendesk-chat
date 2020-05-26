@@ -19,6 +19,9 @@
 
 RCT_EXPORT_MODULE(RNZendeskChatModule);
 
+NSInteger chatStateInt;
+ZDKObservationToken *token;
+
 RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
   ZDKChatAPIConfiguration *config = [[ZDKChatAPIConfiguration alloc] init];
   if (options[@"department"]) {
@@ -36,7 +39,12 @@ RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
 }
 
 RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
-    
+    if (token) {
+        [token cancel];
+    }
+    token = [ZDKChat.chatProvider observeChatState:^(ZDKChatState *chatState) {
+        chatStateInt = chatState.chatSessionStatus;
+    }];
     dispatch_sync(dispatch_get_main_queue(), ^{
   [self setVisitorInfo:options];
 
@@ -76,6 +84,11 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
   });
 }
 
+RCT_REMAP_METHOD(getChatState, getChatStateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    resolve([NSNumber numberWithInteger:chatStateInt]);
+}
+
 RCT_EXPORT_METHOD(initSupport:(NSDictionary *)options) {
   [ZDKZendesk initializeWithAppId:options[@"appId"] clientId:options[@"clientId"] zendeskUrl:options[@"url"]];
   [ZDKSupport initializeWithZendesk:[ZDKZendesk instance]];
@@ -87,7 +100,6 @@ RCT_EXPORT_METHOD(setUserIdentity:(NSDictionary *)options) {
 }
 
 RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
-
     dispatch_sync(dispatch_get_main_queue(), ^{
       UIViewController *helpCenter = [ZDKHelpCenterUi buildHelpCenterOverviewUiWithConfigs:@[]];
       UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
@@ -101,14 +113,14 @@ RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
 
 RCT_EXPORT_METHOD(showTickets:(NSDictionary *)options) {
     dispatch_sync(dispatch_get_main_queue(), ^{
-      UIViewController *requestListController = [ZDKRequestUi buildRequestList];
-      UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-      while (topController.presentedViewController) {
-        topController = topController.presentedViewController;
-      }
-      UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestListController];
-      [topController presentViewController:navControl animated:YES completion:nil];
-      });
+          UIViewController *requestListController = [ZDKRequestUi buildRequestList];
+          UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+          while (topController.presentedViewController) {
+            topController = topController.presentedViewController;
+          }
+          UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestListController];
+          [topController presentViewController:navControl animated:YES completion:nil];
+    });
 }
 
 RCT_EXPORT_METHOD(init:(NSString *)zenDeskKey) {
