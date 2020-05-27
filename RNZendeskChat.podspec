@@ -20,4 +20,5 @@ Pod::Spec.new do |s|
   s.dependency 'React'
   s.dependency 'ZendeskChatSDK'
   s.dependency 'ZendeskSupportSDK'
+  s.resource = 'ios/Resources/ZendeskModuleAssets.xcassets'
 end

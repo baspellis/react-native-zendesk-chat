@@ -60,9 +60,9 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
     dispatch_block_t block = ^
     {
         [self setVisitorInfo:options];
-
-        [ZDKCommonTheme currentTheme].primaryColor = [UIColor
-                                colorWithRed:73.0f/255.0f green:223.0f/255.0f blue:174.0f/255.0f alpha:1.0f];
+        UIColor* tintColor = [UIColor
+                              colorWithRed:73.0f/255.0f green:223.0f/255.0f blue:174.0f/255.0f alpha:1.0f];
+        [ZDKCommonTheme currentTheme].primaryColor = tintColor;
 
         ZDKMessagingConfiguration *messagingConfiguration = [[ZDKMessagingConfiguration alloc] init];
         messagingConfiguration.name = options[@"agentName"];
@@ -88,12 +88,18 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
         if (error) {
             NSLog(@"Error: %@ %@", error, [error userInfo]);
         }
+        UIImage* chevronDown = [UIImage imageNamed:@"chevron_down" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil];
+        UIBarButtonItem* leftBarItem = [[UIBarButtonItem alloc] initWithImage:chevronDown
+                                                                        style:UIBarButtonItemStylePlain target:self action:@selector(chatClosedClicked)];
+        leftBarItem.tintColor = tintColor;
+        chatController.navigationItem.leftBarButtonItem = leftBarItem;
         UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
         while (topController.presentedViewController) {
             topController = topController.presentedViewController;
         }
         UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
         [topController presentViewController:navControl animated:YES completion:nil];
+        
         if (!globalChatButton) {
             [self addGlobalChatButton: options];
         }
@@ -103,6 +109,19 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
     } else {
         dispatch_sync(dispatch_get_main_queue(), block);
     }
+}
+
+- (NSBundle *) getResourcesBundle {
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    return bundle;
+}
+
+- (void) chatClosedClicked {
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    [topController dismissViewControllerAnimated:TRUE completion:NULL];
 }
 
 - (void) addGlobalChatButton: (NSDictionary *)options {
