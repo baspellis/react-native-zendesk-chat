@@ -4,5 +4,17 @@
     <application>
         <activity android:name="zendesk.messaging.MessagingActivity"
             android:theme="@style/YourLightTheme" />
+
+        <activity android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/YourLightTheme" />
+
+        <activity android:name="zendesk.support.guide.ViewArticleActivity"
+            android:theme="@style/YourLightTheme" />
+
+        <activity android:name="zendesk.support.request.RequestActivity"
+            android:theme="@style/YourLightTheme" />
+
+        <activity android:name="zendesk.support.requestlist.RequestListActivity"
+            android:theme="@style/YourLightTheme" />
     </application>
 </manifest>
