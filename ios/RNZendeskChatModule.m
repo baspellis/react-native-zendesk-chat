@@ -62,7 +62,7 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
         [self setVisitorInfo:options];
 
         [ZDKCommonTheme currentTheme].primaryColor = [UIColor
-                                colorWithRed:75.0f/255.0f green:219.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+                                colorWithRed:73.0f/255.0f green:223.0f/255.0f blue:174.0f/255.0f alpha:1.0f];
 
         ZDKMessagingConfiguration *messagingConfiguration = [[ZDKMessagingConfiguration alloc] init];
         messagingConfiguration.name = options[@"agentName"];

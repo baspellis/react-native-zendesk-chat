@@ -2,10 +2,15 @@ package com.taskrabbit.zendesk;
 
 import android.app.Activity;
 import android.content.Context;
+
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -43,6 +48,7 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
     private ObservationScope observationScope;
     private ChatSessionStatus chatSessionStatus;
     private Button globalChatButton;
+    private ReadableMap lastChatOptions;
 
     private final String LOG_TAP = "Zendesk";
 
@@ -102,7 +108,7 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
         String url = options.getString("url");
         Context context = mReactContext;
         Zendesk.INSTANCE.init(context, url, appId, clientId);
-        Support.INSTANCE.init(Zendesk.INSTANCE);        
+        Support.INSTANCE.init(Zendesk.INSTANCE);
     }
 
     @ReactMethod
@@ -132,6 +138,7 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startChat(ReadableMap options) {
+        lastChatOptions = options;
         if (observationScope != null) {
             observationScope.cancel();
         }
@@ -174,14 +181,34 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
     }
 
     private void addGlobalChatButton(ReadableMap options) {
-        ViewGroup root = getCurrentRootView();
+        final ViewGroup root = getCurrentRootView();
         if (root == null) {
             return;
         }
         globalChatButton = new Button(mReactContext);
         globalChatButton.setText(options.getString("retainButtonTitle"));
-        globalChatButton.setBackgroundColor(ContextCompat.getColor(mReactContext, R.color.vicky_green));
+        globalChatButton.setBackground(ContextCompat.getDrawable(mReactContext, R.drawable.global_button));
         globalChatButton.setPadding(5, 5, 5, 5);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            globalChatButton.setZ(999);
+        }
+        globalChatButton.setTextColor(Color.WHITE);
+        globalChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChat(lastChatOptions);
+            }
+        });
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams((int)mReactContext.getResources().getDimension(R.dimen.global_button_width),
+                (int)mReactContext.getResources().getDimension(R.dimen.global_button_height));
+        params.leftMargin = (int)mReactContext.getResources().getDimension(R.dimen.global_button_left_offset);
+        params.topMargin  = root.getHeight() - (int)mReactContext.getResources().getDimension(R.dimen.global_button_bottom_offset);
+        root.post(new Runnable() {
+            @Override
+            public void run() {
+                root.addView(globalChatButton, params);
+            }
+        });
     }
 
     private void removeGlobalChatButton() {
@@ -202,8 +229,7 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
             if (activity == null) {
                 return null;
             }
-            return (ViewGroup) ((ViewGroup) activity
-                    .findViewById(android.R.id.content)).getChildAt(0);
+            return activity.findViewById(android.R.id.content);
         } catch (Exception e) {
             Log.d(LOG_TAP, "Failed to get root view", e);
         }
