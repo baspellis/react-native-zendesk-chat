@@ -88,10 +88,19 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
         if (error) {
             NSLog(@"Error: %@ %@", error, [error userInfo]);
         }
-        UIImage* chevronDown = [UIImage imageNamed:@"chevron_down" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil];
-        UIBarButtonItem* leftBarItem = [[UIBarButtonItem alloc] initWithImage:chevronDown
-                                                                        style:UIBarButtonItemStylePlain target:self action:@selector(chatClosedClicked)];
-        leftBarItem.tintColor = tintColor;
+        UIImage* chevronImage = [UIImage imageNamed:@"chevron_down" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil];
+        
+        NSInteger chevronSize = 25;
+        UIButton *chevronButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        chevronButton.tintColor = tintColor;
+        chevronButton.frame = CGRectMake( 0, 0, chevronSize, chevronSize );
+        [chevronButton addTarget:self action: @selector(chatClosedClicked) forControlEvents:UIControlEventTouchDown];
+        [chevronButton setImage:chevronImage forState:UIControlStateNormal];
+        UIBarButtonItem* leftBarItem = [[UIBarButtonItem alloc] initWithCustomView:chevronButton];
+        NSLayoutConstraint* width = [leftBarItem.customView.widthAnchor constraintEqualToConstant:chevronSize];
+        [width setActive:TRUE];
+        NSLayoutConstraint* height = [leftBarItem.customView.heightAnchor constraintEqualToConstant:chevronSize];
+        [height setActive:TRUE];
         chatController.navigationItem.leftBarButtonItem = leftBarItem;
         UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
         while (topController.presentedViewController) {
