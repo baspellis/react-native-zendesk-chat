@@ -2,6 +2,6 @@
 <resources>
     <dimen name="global_button_width">60dp</dimen>
     <dimen name="global_button_height">60dp</dimen>
-    <dimen name="global_button_bottom_offset">100dp</dimen>
+    <dimen name="global_button_bottom_offset">130dp</dimen>
     <dimen name="global_button_left_offset">15dp</dimen>
 </resources>
