@@ -186,9 +186,7 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
             return;
         }
         globalChatButton = new Button(mReactContext);
-        globalChatButton.setText(options.getString("retainButtonTitle"));
-        globalChatButton.setBackground(ContextCompat.getDrawable(mReactContext, R.drawable.global_button));
-        globalChatButton.setPadding(5, 5, 5, 5);
+        globalChatButton.setBackground(ContextCompat.getDrawable(mReactContext, R.drawable.help_chat));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             globalChatButton.setZ(999);
         }

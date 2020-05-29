@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="global_button_width">120dp</dimen>
-    <dimen name="global_button_height">30dp</dimen>
+    <dimen name="global_button_width">60dp</dimen>
+    <dimen name="global_button_height">60dp</dimen>
     <dimen name="global_button_bottom_offset">100dp</dimen>
-    <dimen name="global_button_left_offset">20dp</dimen>
+    <dimen name="global_button_left_offset">15dp</dimen>
 </resources>

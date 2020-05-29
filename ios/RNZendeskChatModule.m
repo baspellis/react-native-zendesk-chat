@@ -24,6 +24,8 @@ NSInteger chatStateInt;
 ZDKObservationToken *token;
 NSDictionary* lastUsedChatOptions;
 UIButton *globalChatButton;
+NSTimer *timer;
+NSInteger lastChatCount;
 
 
 RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
@@ -51,10 +53,17 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
     if (token) {
         [token cancel];
     }
+    //NSTimer calling Method B, as long the audio file is playing, every 5 seconds.
     token = [ZDKChat.chatProvider observeChatState:^(ZDKChatState *chatState) {
         chatStateInt = chatState.chatSessionStatus;
+
+
         if (chatStateInt == 3 || chatStateInt == 4) {
             [self removeGlobalChatButton];
+            if (timer) {
+                [timer invalidate];
+                timer = NULL;
+            }
         }
     }];
     dispatch_block_t block = ^
@@ -112,12 +121,25 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
         if (!globalChatButton) {
             [self addGlobalChatButton: options];
         }
+
+        timer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                         target:self selector:@selector(chatStateChecker:) userInfo:nil repeats:YES];
     };
     if ([NSThread isMainThread]) {
         block();
     } else {
         dispatch_sync(dispatch_get_main_queue(), block);
     }
+}
+
+- (void) chatStateChecker:(NSTimer *)timer
+{
+//    ZDKChatState* chatState = ZDKChat.chatProvider.chatState;
+//    NSInteger chatCount = [chatState.logs count];
+//    if (chatCount != lastChatCount) {
+//        [self setChatButtonOn];
+//    }
+//    lastChatCount = chatCount;
 }
 
 - (NSBundle *) getResourcesBundle {
@@ -139,20 +161,18 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
     [globalChatButton addTarget:self
                action:@selector(globalChatButtonClicked)
      forControlEvents:UIControlEventTouchUpInside];
+    globalChatButton.imageView.contentMode = UIViewContentModeScaleToFill;
     [self setChatButtonOn];
-    globalChatButton.backgroundColor = UIColorFromRGB(0x49dfae);
-    globalChatButton.layer.cornerRadius = 8.0;
-    globalChatButton.clipsToBounds = TRUE;
-    globalChatButton.frame = CGRectMake(20.0, mainWindow.frame.size.height - 150, 100.0, 40.0);
+    globalChatButton.frame = CGRectMake(20.0, mainWindow.frame.size.height - 165, 60.0, 60.0);
     [mainWindow addSubview:globalChatButton];
 }
 
 - (void) setChatButtonOn {
-    [globalChatButton setImage:[UIImage imageNamed:@"help_chat_on" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
+    [globalChatButton setBackgroundImage:[UIImage imageNamed:@"help_chat_off" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
 }
 
 - (void) setChatButtonOff {
-    [globalChatButton setImage:[UIImage imageNamed:@"help_chat_off" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
+    [globalChatButton setBackgroundImage:[UIImage imageNamed:@"help_chat_off" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
 }
 
 - (void) removeGlobalChatButton {
