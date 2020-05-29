@@ -139,12 +139,20 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
     [globalChatButton addTarget:self
                action:@selector(globalChatButtonClicked)
      forControlEvents:UIControlEventTouchUpInside];
-    [globalChatButton setTitle:options[@"retainButtonTitle"] forState:UIControlStateNormal];
+    [self setChatButtonOn];
     globalChatButton.backgroundColor = UIColorFromRGB(0x49dfae);
     globalChatButton.layer.cornerRadius = 8.0;
     globalChatButton.clipsToBounds = TRUE;
     globalChatButton.frame = CGRectMake(20.0, mainWindow.frame.size.height - 150, 100.0, 40.0);
     [mainWindow addSubview:globalChatButton];
+}
+
+- (void) setChatButtonOn {
+    [globalChatButton setImage:[UIImage imageNamed:@"help_chat_on" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
+}
+
+- (void) setChatButtonOff {
+    [globalChatButton setImage:[UIImage imageNamed:@"help_chat_off" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
 }
 
 - (void) removeGlobalChatButton {
@@ -156,6 +164,7 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
 }
 
 - (void) globalChatButtonClicked {
+    [self setChatButtonOff];
     [self startChatFunction:lastUsedChatOptions];
 }
 
