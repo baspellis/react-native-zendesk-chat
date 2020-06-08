@@ -161,10 +161,10 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
         setVisitorInfo(options);
 
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
-                .withAgentAvailabilityEnabled(true)
-                .withOfflineFormEnabled(true)
-                .withNameFieldStatus(PreChatFormFieldStatus.OPTIONAL)
-                .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                .withAgentAvailabilityEnabled(false)
+                .withOfflineFormEnabled(false)
+                .withNameFieldStatus(PreChatFormFieldStatus.HIDDEN)
+                .withEmailFieldStatus(PreChatFormFieldStatus.HIDDEN)
                 .withPhoneFieldStatus(PreChatFormFieldStatus.HIDDEN)
                 .withDepartmentFieldStatus(PreChatFormFieldStatus.HIDDEN)
                 .build();

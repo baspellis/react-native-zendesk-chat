@@ -168,11 +168,11 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
 }
 
 - (void) setChatButtonOn {
-    [globalChatButton setBackgroundImage:[UIImage imageNamed:@"help_chat_off" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
+    [globalChatButton setBackgroundImage:[UIImage imageNamed:@"help_chat" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
 }
 
 - (void) setChatButtonOff {
-    [globalChatButton setBackgroundImage:[UIImage imageNamed:@"help_chat_off" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
+    [globalChatButton setBackgroundImage:[UIImage imageNamed:@"help_chat" inBundle:[self getResourcesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
 }
 
 - (void) removeGlobalChatButton {
