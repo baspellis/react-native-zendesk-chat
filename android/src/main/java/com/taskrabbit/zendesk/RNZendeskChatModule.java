@@ -162,11 +162,11 @@ public class RNZendeskChatModule extends ReactContextBaseJavaModule {
 
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
                 .withAgentAvailabilityEnabled(true)
-                .withPreChatFormEnabled(true)
-                .withNameFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                .withOfflineFormEnabled(true)
+                .withNameFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                 .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                 .withPhoneFieldStatus(PreChatFormFieldStatus.HIDDEN)
-                .withDepartmentFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                .withDepartmentFieldStatus(PreChatFormFieldStatus.HIDDEN)
                 .build();
 
         Activity activity = getCurrentActivity();
