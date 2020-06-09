@@ -163,7 +163,7 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
      forControlEvents:UIControlEventTouchUpInside];
     globalChatButton.imageView.contentMode = UIViewContentModeScaleToFill;
     [self setChatButtonOn];
-    globalChatButton.frame = CGRectMake(20.0, mainWindow.frame.size.height - 165, 72.0, 38.0);
+    globalChatButton.frame = CGRectMake(20.0, mainWindow.frame.size.height - 155, 96.0, 50.0);
     [mainWindow addSubview:globalChatButton];
 }
 
